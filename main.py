@@ -6,9 +6,10 @@ from sqlalchemy.orm import Session
 
 import schemas
 import crud
-from db.database import engine
-from db.database import SessionLocal
+import db.models
+from db.database import engine, Base, SessionLocal
 
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -31,8 +32,12 @@ def read_root()-> dict:
 
 
 @app.get("/authors/", response_model=list[schemas.Author])
-def get_authors(db: Session = Depends(get_db)) -> list[schemas.Author]:
-    return crud.get_all_authors(db=db)
+def get_authors(
+        db: Session = Depends(get_db),
+        skip: int = 0,
+        limit: int = 10
+) -> list[schemas.Author]:
+    return crud.get_all_authors(db=db, skip=skip, limit=limit)
 
 
 @app.get("/authors/{author_id}/", response_model=schemas.Author)
@@ -58,11 +63,15 @@ def create_author(
 
 
 @app.get("/books/", response_model=list[schemas.Book])
-def get_books(db: Session = Depends(get_db)) -> list[schemas.Book]:
-    return crud.get_book_list(db=db)
+def get_books(
+        db: Session = Depends(get_db),
+        skip: int = 0,
+        limit: int = 10
+) -> list[schemas.Book]:
+    return crud.get_book_list(db=db, skip=skip, limit=limit)
 
 
-@app.get("/authors/{author_id}/books/", response_model=schemas.Book)
+@app.get("/authors/{author_id}/books/", response_model=list[schemas.Book])
 def get_books_by_author_id(
         author_id: int,
         db: Session = Depends(get_db)

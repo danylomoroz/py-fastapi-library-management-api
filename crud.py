@@ -41,7 +41,7 @@ def get_book_list(db: Session, skip: int = 0, limit: int = 10):
             .all())
 
 def get_books_by_author_id(db: Session, author_id: int):
-    return db.query(models.DBBook).filter(models.DBBook.author_id == author_id).first()
+    return db.query(models.DBBook).filter(models.DBBook.author_id == author_id).all()
 
 
 def create_book(db: Session, book: schemas.BookCreate):
